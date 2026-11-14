@@ -1,0 +1,25 @@
+# ---- 私有凭证：绝不要提交 ----
+cookie.txt
+cookie*.txt
+!cookie.example.txt
+config.json
+
+# ---- 生成的音频与报告（体积大、属个人内容）----
+*.flac
+*.wav
+*.mp3
+*.m4a
+*.ogg
+out/
+*_处理报告.json
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# ---- 打包产物 / 系统文件 ----
+*.zip
+.DS_Store
+Thumbs.db

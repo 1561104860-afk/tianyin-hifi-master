@@ -1,0 +1,49 @@
+name: Build skill zip
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create distributable zip
+        run: |
+          set -e
+          BUNDLE="tianyin-hifi-master"
+          mkdir -p "dist/$BUNDLE/scripts" "dist/$BUNDLE/references"
+          cp SKILL.md README.md LICENSE install.py config.example.json cookie.example.txt "dist/$BUNDLE/"
+          cp scripts/master_pipeline.py "dist/$BUNDLE/scripts/"
+          cp references/*.md "dist/$BUNDLE/references/"
+          # 发布前隐私闸门（只含通用规则，不写死任何具体私人标识）
+          if grep -rEn --include='*.md' --include='*.py' --include='*.txt' --include='*.json' \
+             -e '@(qq|163|gmail|outlook|hotmail)\.com' \
+             -e '[A-Za-z]:[/\\]Users' \
+             -e 'ghp_|github_pat_' \
+             -e '<OWNER>' \
+             -e 'wxid_|xwechat_files' \
+             "dist/$BUNDLE"; then
+            echo "::error::发布包含个人信息或未替换占位符，立即中止"
+            exit 1
+          fi
+          cd dist
+          zip -r tianyin-hifi-master.zip "$BUNDLE" -x '*__pycache__*' '*.pyc' '*.zip'
+          echo "---- zip contents ----"
+          unzip -l tianyin-hifi-master.zip
+          echo "---- private file leak check ----"
+          if unzip -l tianyin-hifi-master.zip | grep -E '(^|/)cookie\.txt$|(^|/)config\.json$|\.pyc'; then
+            echo "::error::私有文件被打包，立即中止"
+            exit 1
+          fi
+
+      - name: Attach zip to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/tianyin-hifi-master.zip

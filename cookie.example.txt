@@ -1,0 +1,10 @@
+这是模板文件，不含任何真实凭证。
+
+使用方法：
+1. 把本文件复制/另存为同目录下的 cookie.txt
+2. 用浏览器登录 https://music.163.com/st/tianyin/my-assets
+3. F12 -> Network -> 任意发往 music.163.com 的请求 -> Request Headers -> 复制整行 Cookie
+4. 粘贴成「一行」（不要换行）保存到 cookie.txt
+
+cookie.txt 已被 .gitignore 排除，不会被提交到仓库。
+也可以用环境变量 TIANYIN_COOKIE / TIANYIN_COOKIE_FILE 传入，完全不落盘。
